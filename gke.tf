@@ -15,23 +15,21 @@ resource "google_compute_subnetwork" "subnet" {
   ip_cidr_range            = "10.0.0.0/24"
 }
 
-resource "google_container_cluster" "primary" {
-  name                     = "zonal-private-gke"
-  location                 = "us-west1-a"
-  remove_default_node_pool = true
-  initial_node_count       = 1
-  network                  = google_compute_network.vpc.self_link
-  subnetwork               = google_compute_subnetwork.subnet.self_link
-  deletion_protection = false
-}
-
-resource "google_container_node_pool" "primary_nodes" {
-  name       = "primary-node-pool"
-  location   = "us-west1-a"
-  cluster    = google_container_cluster.primary.name
-  node_count = var.node_status
-  node_config {
+resource "google_compute_instance" "normal" {
+    name         = "normal"
+    zone         = "us-central1-a"
     machine_type = "e2-medium"
-    oauth_scopes = [ "https://www.googleapis.com/auth/cloud-platform"]
-  }
+    boot_disk {
+        initialize_params {
+            image="projects/ubuntu-os-cloud/global/images/ubuntu-2404-noble-amd64-v20250819"
+            size  = 20
+            type  = "pd-balanced"
+        }
+    }
+    desired_status = "RUNNING"
+    network_interface {
+        access_config {}
+        subnetwork = google_compute_subnetwork.subnet.id   
+    }
+    allow_stopping_for_update = true
 }
