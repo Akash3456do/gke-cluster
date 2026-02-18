@@ -4,11 +4,12 @@ terraform {
     }
   }
   backend "gcs" {
-    bucket = "backup235"
+    bucket = "backup237"
     prefix = "terraform/gke-harness"
   }
 }
 provider "google" {
-  project = "utopian-nimbus-477714-j0"
+  project = "akash-487011"
 }
+
 
